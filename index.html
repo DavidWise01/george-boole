@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Boole — the algebra of true and false</title>
+<meta name="description" content="LOGIKĒ VII — George Boole (1815–1864). Leibniz dreamed logic could be algebra; Boole did it. In The Laws of Thought (1854) he made reasoning an algebra of 0 and 1: AND is multiplication (xy), OR is addition (x+y−xy), NOT is 1−x, true is 1, false is 0 — and the single law that makes it logic rather than arithmetic is x²=x, which forces every variable to be 0 or 1. Logical inference becomes calculation. Seventy years later Shannon welded it to switches — series = AND, parallel = OR — and every digital gate became Boole's algebra in silicon. Live algebra, the defining law, and the switch. Honest: the modern clean form is post-Boole; the circuit link is Shannon's. David Lee Wise, two-layer honest.">
+<style>
+  :root{--bg:#0c0f17;--panel:#121622;--panel2:#19202f;--edge:#2a3346;--ink:#ede6d6;--dim:#b3ad9a;--faint:#7c7660;
+    --ochre:#d9b66a;--ochre2:#f0d79a;--proof:#5ad1ff;--proof2:#a7e6ff;--one:#7fe0a0;--zero:#fb7185;--amber:#fbbf24;--ember:#fb923c;
+    --mono:'SFMono-Regular',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.58;background-image:radial-gradient(1100px 560px at 75% -10%,#1c2436 0%,transparent 55%),radial-gradient(900px 500px at 0% 100%,#14110a 0%,transparent 55%);}
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 26px 90px}
+  header{border-bottom:1px solid var(--edge);padding-bottom:22px;margin-bottom:24px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ochre);opacity:.95}
+  h1{font-family:Georgia,serif;font-size:38px;line-height:1.08;margin:.3em 0 .14em;font-weight:600}h1 em{color:var(--ochre2);font-style:italic}
+  .who{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.04em}
+  .sub{color:var(--dim);font-size:16px;max-width:74ch;margin-top:14px}.sub b{color:var(--ink)}
+  .verdicts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:22px 0}@media(max-width:720px){.verdicts{grid-template-columns:1fr}}
+  .vc{border:1px solid var(--edge);border-radius:11px;padding:13px 15px;border-top-width:3px;background:rgba(18,22,34,.6)}
+  .vc .badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em}
+  .vc.s{border-top-color:var(--one)}.vc.s .badge{color:var(--one)} .vc.m{border-top-color:var(--amber)}.vc.m .badge{color:var(--amber)} .vc.f{border-top-color:var(--ember)}.vc.f .badge{color:var(--ember)}
+  .vc p{font-size:12px;color:var(--dim);margin:6px 0 0;line-height:1.45}.vc p b{color:var(--ink)}
+  section{margin:36px 0}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ochre2);border-left:2px solid var(--ochre);padding-left:11px;margin:0 0 6px}
+  .lede{color:var(--dim);font-size:15px;margin:0 0 18px;max-width:80ch}
+  .panel{background:linear-gradient(180deg,var(--panel),#0a0d14);border:1px solid var(--edge);border-radius:14px;padding:20px;box-shadow:0 24px 60px -40px #000}
+  .controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:16px}
+  .tgl{font-family:var(--mono);font-size:15px;font-weight:700;padding:8px 18px;border-radius:9px;cursor:pointer;border:1px solid var(--edge);min-width:70px;text-align:center}
+  .tgl.one{background:rgba(127,224,160,.16);color:var(--one);border-color:#2f6f4a}.tgl.zero{background:rgba(251,113,133,.14);color:var(--zero);border-color:#5c1f2e}
+  .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}@media(max-width:680px){.ops{grid-template-columns:repeat(2,1fr)}}
+  .op{border:1px solid var(--edge);border-radius:10px;padding:13px;text-align:center;background:rgba(0,0,0,.16)}
+  .op .nm{font-family:var(--mono);font-size:11px;color:var(--dim)}.op .ar{font-family:var(--mono);font-size:13px;color:var(--proof2);margin:6px 0}
+  .op .val{font-family:var(--mono);font-size:24px;font-weight:700}.op .val.one{color:var(--one)}.op .val.zero{color:var(--zero)}
+  table.tt{border-collapse:collapse;font-family:var(--mono);font-size:13px;margin-top:14px;width:100%}
+  table.tt th,table.tt td{border:1px solid var(--edge);padding:6px 8px;text-align:center}table.tt th{color:var(--ochre2);font-size:11px}
+  table.tt td.one{color:var(--one)}table.tt td.zero{color:var(--zero)}table.tt tr.hot td{background:rgba(217,182,106,.10)}
+  canvas{display:block;width:100%;border-radius:10px;background:#080b12;border:1px solid var(--edge)}
+  .cap{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:7px}
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}@media(max-width:820px){.pgrid{grid-template-columns:1fr}}
+  .reads{display:flex;flex-direction:column;gap:10px}
+  .eq{font-family:var(--mono);font-size:15px;color:var(--proof2);background:#0c1622;border:1px solid var(--edge);border-radius:8px;padding:10px 12px;display:inline-block;margin:4px 0}
+  .note{color:var(--dim);font-size:13.5px;border-left:2px solid var(--edge);padding-left:13px;margin:16px 0 0}.note b{color:var(--ink)}
+  .sw{font-family:var(--mono);font-size:13px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--edge)}
+  .sw.closed{background:rgba(127,224,160,.16);color:var(--one);border-color:#2f6f4a}.sw.open{background:#161b27;color:var(--faint)}
+  footer{margin-top:44px;border-top:1px solid var(--edge);padding-top:18px;color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.7}
+  footer a,.bar2 a{color:var(--ochre)}.bar2{font-family:var(--mono);font-size:11.5px;margin-bottom:16px}.bar2 a{text-decoration:none;border-bottom:1px dotted #4a4126}
+  code{font-family:var(--mono);color:var(--ochre2);background:#15120a;padding:1px 5px;border-radius:5px}
+  blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--ochre);color:var(--ink);font-style:italic;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar2"><a href="https://davidwise01.github.io/ud0/">◄ UD0</a> &nbsp; <a href="https://davidwise01.github.io/leibniz/">← Leibniz</a> &nbsp; LOGIKĒ · VII &nbsp; · &nbsp; <a href="https://davidwise01.github.io/the-branch-predictor/">→ the gate (PSĒPHOS)</a></div>
+<header>
+  <div class="kicker">LOGIKĒ · VII · the destination — logic becomes algebra</div>
+  <h1>George <em>Boole</em></h1>
+  <div class="who">1815 – 1864 · Lincoln, England · self-taught, professor at Cork · author of <i>The Laws of Thought</i></div>
+  <div class="sub">Leibniz dreamed that logic could be an algebra. Boole, a shoemaker's son who taught himself mathematics, simply <em>did it</em>. He let <b>1</b> stand for true and <b>0</b> for false, and discovered that the laws of reasoning are the rules of an algebra: <b>AND is multiplication</b>, <b>OR is addition</b>, <b>NOT is 1 minus</b>. Reasoning, made calculable at last. He could not have known that seventy years on, an engineer named Shannon would notice that an electrical switch is also a 0 or a 1 — and that Boole's algebra was therefore the blueprint of every machine that would ever think.</div>
+</header>
+<div class="verdicts">
+  <div class="vc s"><span class="badge">✓ STRONG</span><p><b>Logic IS algebra.</b> AND=×, OR=+, NOT=1−x, true=1, false=0, with the law x²=x — this is Boolean algebra, exact and foundational, and (via Shannon) the literal basis of <b>every digital gate</b>.</p></div>
+  <div class="vc m"><span class="badge">◐ REFINED LATER</span><p><b>His version was quirky.</b> Boole used uninterpretable steps (x+x = 2x, even division). The clean modern algebra — where x+x = x — was tidied by <b>Jevons, Peirce, Schröder</b> after him.</p></div>
+  <div class="vc f"><span class="badge">◔ COMPLETED BY OTHERS</span><p><b>He laid the stone.</b> It's propositional/class logic only (no relations → <b>Frege</b>); and the circuit link that made it the world's logic is <b>Shannon's</b> (1937), seventy years on.</p></div>
+</div>
+
+<section>
+  <h2>I · The algebra of 0 and 1</h2>
+  <p class="lede">Set <code>x</code> and <code>y</code> to 1 (true) or 0 (false) and watch each logical operation compute as ordinary <em>arithmetic</em> — and land on exactly the right truth value. This is the whole revelation: <b>"x and y" is literally x times y</b>; "not x" is literally 1 minus x. Reasoning carried out as a sum.</p>
+  <div class="panel">
+    <div class="controls"><span class="mono" style="font-size:11px;color:var(--faint)">x =</span><div class="tgl one" id="x">1</div><span class="mono" style="font-size:11px;color:var(--faint)">y =</span><div class="tgl zero" id="y">0</div><span class="mono" style="font-size:11px;color:var(--faint)">— click to flip</span></div>
+    <div class="ops" id="ops"></div>
+    <table class="tt" id="ttable"></table>
+    <div class="note">No new ideas were needed — just the audacity to treat true and false as numbers. Every gate symbol an engineer draws is one of these four arithmetic expressions, frozen into copper.</div>
+  </div>
+</section>
+
+<section>
+  <h2>II · x² = x — the law that makes it logic</h2>
+  <p class="lede">What separates Boole's algebra from ordinary algebra is a single strange equation: <span class="eq">x² = x</span> In normal numbers that holds for almost nothing. In logic it must hold for <em>everything</em> — and the only numbers that satisfy it are <b>0 and 1</b>. That one law is the whole confinement: it forces every quantity to be true or false, nothing in between. Its twin, <code>x(1−x) = 0</code>, is Aristotle's old law of non-contradiction, now written as arithmetic.</p>
+  <div class="panel">
+    <div class="pgrid">
+      <div><canvas id="law" width="420" height="280"></canvas><div class="cap">y = x (straight) and y = x² (curve) meet only at <b style="color:var(--zero)">0</b> and <b style="color:var(--one)">1</b> — the only solutions of x²=x</div></div>
+      <div class="reads">
+        <div class="eq">x · x = x &nbsp;⟹&nbsp; x ∈ {0, 1}</div>
+        <div class="eq">x(1 − x) = 0 &nbsp;<span style="color:var(--faint)">// non-contradiction</span></div>
+        <div class="eq">x + x = x &nbsp;<span style="color:var(--faint)">// (modern) OR is idempotent</span></div>
+        <div class="note">"Nothing can be both itself and its opposite" — the firmest law Aristotle named — turns out to be just <code>x(1−x)=0</code>. Twenty-two centuries of logic, reduced to a quadratic.</div>
+      </div>
+    </div>
+  </div>
+  <blockquote>"…the laws whose expression it is… are the laws of the human mind." <span style="color:var(--faint);font-style:normal;font-size:12px">— George Boole, The Laws of Thought (1854)</span></blockquote>
+</section>
+
+<section>
+  <h2>III · Boole → Shannon → the gate</h2>
+  <p class="lede">The leap that made Boole the most consequential mathematician you've half-heard-of came in 1937, when Claude Shannon realised an electrical <b>switch</b> is a 0 or a 1: open or closed. Wire two switches <b>in series</b> and current flows only if <em>both</em> close — that's <code>AND</code>, that's <code>x·y</code>. Wire them <b>in parallel</b> and it flows if <em>either</em> closes — that's <code>OR</code>. Flip the switches and watch the lamp obey Boole's arithmetic. Every chip in PSĒPHOS is this, a few billion times.</p>
+  <div class="panel">
+    <div class="controls">A <button class="sw open" id="A">open</button> B <button class="sw open" id="B">closed</button>
+      <button id="mode" class="sw closed" style="margin-left:8px">series = AND</button></div>
+    <canvas id="circ" width="900" height="200"></canvas>
+    <div class="cap">two switches + a lamp · <b>series</b> lights only if A AND B closed · <b>parallel</b> lights if A OR B · the lamp = the Boolean value</div>
+  </div>
+  <p class="note" style="border-color:var(--amber)"><b style="color:var(--amber)">Gate kept on.</b> Boole's <em>own</em> 1854 system was rougher than the clean thing taught today — he let expressions pass through meaningless intermediate values (<code>2x</code>, fractions) on the way to a sensible answer, and it was Jevons, Peirce and Schröder who filed it down to the idempotent lattice (<code>x+x=x</code>) we call Boolean algebra. His algebra is also <em>propositional</em> — it cannot say "every" or "some" or "taller than"; that needed Frege, next in this line. And Boole himself never touched a circuit: the marriage of his algebra to electricity is Shannon's, written when Boole had been dead seventy years. He died at forty-nine — pneumonia, after walking miles through rain to lecture, then being wrapped in wet sheets by a well-meaning remedy. Seen in his lifetime as an ingenious curiosity; revealed, a century later, as the man who wrote the grammar of the machine age.</p>
+</section>
+
+<footer>
+  GEORGE BOOLE · LOGIKĒ VII · two-layer honest<br>
+  live Boolean arithmetic (AND=xy, OR=x+y−xy, NOT=1−x, XOR=x+y−2xy — exact on {0,1}) · the law x²=x ⟹ x∈{0,1} · switches: series=AND, parallel=OR<br>
+  The Laws of Thought (1854) · refined by Jevons/Peirce/Schröder · welded to circuits by Shannon (1937) → every digital gate<br>
+  ← <a href="https://davidwise01.github.io/leibniz/">Leibniz</a> · next → De Morgan (the laws) · Frege (quantifiers) · Shannon (the gate) — and into <a href="https://davidwise01.github.io/the-branch-predictor/">PSĒPHOS</a><br>
+  LOGIKĒ · the lineage of logical mathematics · governor David Lee Wise · CC-BY-ND-4.0
+</footer>
+</div>
+<script>
+"use strict";
+// MODULE I : Boolean arithmetic
+(function(){
+  let x=1,y=0;
+  const OPS=[
+    {nm:'AND',ar:'x · y',f:(a,b)=>a*b},
+    {nm:'OR',ar:'x + y − xy',f:(a,b)=>a+b-a*b},
+    {nm:'NOT x',ar:'1 − x',f:(a)=>1-a},
+    {nm:'XOR',ar:'x + y − 2xy',f:(a,b)=>a+b-2*a*b},
+  ];
+  function renderOps(){
+    document.getElementById('ops').innerHTML=OPS.map(o=>{const v=o.f(x,y);
+      return '<div class="op"><div class="nm">'+o.nm+'</div><div class="ar">'+arithExpr(o,x,y)+'</div><div class="val '+(v?'one':'zero')+'">'+v+'</div></div>';}).join('');
+  }
+  function arithExpr(o,a,b){
+    if(o.nm==='AND')return a+'·'+b+' = '+(a*b);
+    if(o.nm==='OR')return a+'+'+b+'−'+(a*b)+' = '+(a+b-a*b);
+    if(o.nm==='NOT x')return '1−'+a+' = '+(1-a);
+    return a+'+'+b+'−'+(2*a*b)+' = '+(a+b-2*a*b);
+  }
+  function renderTable(){
+    const rows=[[1,1],[1,0],[0,1],[0,0]];
+    let h='<tr><th>x</th><th>y</th><th>x·y (AND)</th><th>x+y−xy (OR)</th><th>1−x (NOT)</th><th>XOR</th></tr>';
+    rows.forEach(([a,b])=>{const hot=(a===x&&b===y);const c=[a,b,a*b,a+b-a*b,1-a,a+b-2*a*b];
+      h+='<tr class="'+(hot?'hot':'')+'">'+c.map(v=>'<td class="'+(v?'one':'zero')+'">'+v+'</td>').join('')+'</tr>';});
+    document.getElementById('ttable').innerHTML=h;
+  }
+  function all(){renderOps();renderTable();}
+  document.getElementById('x').onclick=function(){x^=1;this.className='tgl '+(x?'one':'zero');this.textContent=x;all();};
+  document.getElementById('y').onclick=function(){y^=1;this.className='tgl '+(y?'one':'zero');this.textContent=y;all();};
+  all();
+})();
+// MODULE II : x^2 = x
+(function(){
+  const cv=document.getElementById('law');
+  function fit(){const r=cv.getBoundingClientRect();const d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);return{g,w:r.width,h:r.height};}
+  function draw(){const{g,w,h}=fit();g.clearRect(0,0,w,h);const m=30,x0=m,x1=w-m,y0=h-m,y1=m;
+    const X=t=>x0+t*(x1-x0),Y=v=>y0-v*(y0-y1);
+    g.strokeStyle='#2a3346';g.lineWidth=1;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y0);g.moveTo(x0,y0);g.lineTo(x0,y1);g.stroke();
+    g.fillStyle='#7c7660';g.font='11px ui-monospace,monospace';g.fillText('0',x0-4,y0+14);g.fillText('1',x1-4,y0+14);g.fillText('x',x1-2,y0+14);
+    // y=x
+    g.strokeStyle='#d9b66a';g.lineWidth=2;g.beginPath();g.moveTo(X(0),Y(0));g.lineTo(X(1),Y(1));g.stroke();g.fillStyle='#d9b66a';g.fillText('y = x',X(0.7),Y(0.78));
+    // y=x^2
+    g.strokeStyle='#5ad1ff';g.lineWidth=2;g.beginPath();for(let i=0;i<=100;i++){const t=i/100;i?g.lineTo(X(t),Y(t*t)):g.moveTo(X(t),Y(t*t));}g.stroke();g.fillStyle='#5ad1ff';g.fillText('y = x²',X(0.78),Y(0.5));
+    // intersection dots 0 and 1
+    [[0,'#fb7185'],[1,'#7fe0a0']].forEach(([t,c])=>{g.fillStyle=c;g.shadowBlur=8;g.shadowColor=c;g.beginPath();g.arc(X(t),Y(t),6,0,7);g.fill();g.shadowBlur=0;});
+  }
+  draw();window.addEventListener('resize',draw);
+})();
+// MODULE III : switches
+(function(){
+  let A=false,B=true,series=true;
+  const cv=document.getElementById('circ');
+  function fit(){const r=cv.getBoundingClientRect();const d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);return{g,w:r.width,h:r.height};}
+  function lit(){return series?(A&&B):(A||B);}
+  function sw(g,x,y,closed){g.strokeStyle=closed?'#7fe0a0':'#557073';g.lineWidth=3;
+    g.beginPath();g.arc(x,y,3,0,7);g.arc(x+44,y,3,0,7);g.fillStyle=g.strokeStyle;g.fill();
+    g.beginPath();g.moveTo(x,y);g.lineTo(closed?x+44:x+38,closed?y:y-16);g.stroke();}
+  function wire(g,x1,y1,x2,y2,on){g.strokeStyle=on?'#7fe0a0':'#3a4456';g.lineWidth=on?3:2;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();}
+  function draw(){const{g,w,h}=fit();g.clearRect(0,0,w,h);const on=lit();
+    const bx=60,bttop=h*0.5;
+    // battery
+    g.fillStyle='#d9b66a';g.font='12px ui-monospace,monospace';g.fillText('1',bx-24,bttop+4);
+    if(series){
+      wire(g,bx,bttop,bx+60,bttop,on);sw(g,bx+60,bttop,A);
+      wire(g,bx+104,bttop,bx+200,bttop,on&&A);sw(g,bx+200,bttop,B);
+      wire(g,bx+244,bttop,bx+360,bttop,on);
+      g.fillStyle='#92c2bf';g.fillText('A',bx+78,bttop+24);g.fillText('B',bx+218,bttop+24);
+      var lampX=bx+360;
+    } else {
+      // parallel: two branches
+      const y1=bttop-40,y2=bttop+40;
+      wire(g,bx,bttop,bx+50,bttop,on);
+      wire(g,bx+50,bttop,bx+50,y1,on);wire(g,bx+50,bttop,bx+50,y2,on);
+      wire(g,bx+50,y1,bx+90,y1,on);sw(g,bx+90,y1,A);wire(g,bx+134,y1,bx+230,y1,on&&A);
+      wire(g,bx+50,y2,bx+90,y2,on);sw(g,bx+90,y2,B);wire(g,bx+134,y2,bx+230,y2,on&&B);
+      wire(g,bx+230,y1,bx+230,bttop,on);wire(g,bx+230,y2,bx+230,bttop,on);
+      wire(g,bx+230,bttop,bx+360,bttop,on);
+      g.fillStyle='#92c2bf';g.fillText('A',bx+108,y1-8);g.fillText('B',bx+108,y2+22);
+      var lampX=bx+360;
+    }
+    // lamp
+    g.strokeStyle=on?'#7fe0a0':'#557073';g.lineWidth=2.5;g.beginPath();g.arc(lampX+30,bttop,20,0,7);g.stroke();
+    if(on){g.fillStyle='rgba(127,224,160,.5)';g.shadowBlur=24;g.shadowColor='#7fe0a0';g.beginPath();g.arc(lampX+30,bttop,16,0,7);g.fill();g.shadowBlur=0;}
+    g.strokeStyle=on?'#7fe0a0':'#557073';g.beginPath();g.moveTo(lampX+22,bttop-8);g.lineTo(lampX+38,bttop+8);g.moveTo(lampX+38,bttop-8);g.lineTo(lampX+22,bttop+8);g.stroke();
+    wire(g,lampX,bttop,lampX+10,bttop,on);
+    // value
+    g.fillStyle=on?'#7fe0a0':'#fb7185';g.font='bold 18px ui-monospace,monospace';g.fillText(on?'1 (lit)':'0 (dark)',lampX-10,bttop-34);
+    g.fillStyle='#7c7660';g.font='12px ui-monospace,monospace';g.fillText(series?'A · B = '+((A?1:0)*(B?1:0)):'A + B − AB = '+(((A?1:0)+(B?1:0))-(A&&B?1:0)),bx+120,h-14);
+  }
+  document.getElementById('A').onclick=function(){A=!A;this.className='sw '+(A?'closed':'open');this.textContent=A?'closed':'open';draw();};
+  document.getElementById('B').onclick=function(){B=!B;this.className='sw '+(B?'closed':'open');this.textContent=B?'closed':'open';draw();};
+  document.getElementById('mode').onclick=function(){series=!series;this.textContent=series?'series = AND':'parallel = OR';draw();};
+  draw();window.addEventListener('resize',draw);
+})();
+</script>
+</body>
+</html>
